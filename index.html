@@ -286,6 +286,15 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
   @keyframes slideInUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 }
 
+/* ========== DRAG ELEMENTS ========== */
+.drag-el{cursor:ns-resize;user-select:none;-webkit-user-select:none;touch-action:none}
+.drag-el:hover{outline:2px dashed rgba(255,255,255,.55);outline-offset:5px;border-radius:2px}
+.drag-el.is-dragging{outline:2px solid #e94560;outline-offset:5px;border-radius:2px}
+/* ドラッグヒント（ホバー時） */
+.drag-el::after{content:'↕';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:20px;color:rgba(255,255,255,.55);opacity:0;transition:opacity .15s;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.drag-el:hover::after{opacity:1}
+.drag-el.is-dragging::after{opacity:0}
+
 /* ========== CLOUD MODAL ========== */
 .cloud-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:stretch;justify-content:flex-end}
 .cloud-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);cursor:pointer}
@@ -335,7 +344,8 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
   body *{visibility:hidden!important}
   #print-area,#print-area *{visibility:visible!important}
   #print-area{display:block!important;position:fixed!important;left:0!important;top:0!important}
-  .print-pop{overflow:hidden!important;position:relative!important;page-break-after:always!important;break-after:page!important;box-sizing:border-box!important}
+  .print-pop{overflow:hidden!important;position:relative!important;page-break-after:always!important;break-after:page!important;box-sizing:border-box!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .print-pop *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   .print-pop-a3{width:297mm!important;height:420mm!important;page:A3}
   .print-pop-a4{width:210mm!important;height:297mm!important;page:A4}
 }
@@ -1065,6 +1075,67 @@ function printPOPs() {
   setTimeout(() => { pa.innerHTML = ''; }, 2000);
 }
 
+// ===== DRAG TO REPOSITION =====
+function getCanvasScale() {
+  const t = document.getElementById('a3-scaler').style.transform;
+  const m = t.match(/scale\(([^)]+)\)/);
+  return m ? parseFloat(m[1]) : 1;
+}
+
+function initDrag() {
+  const items = [
+    { elId:'pop-headline', sliderId:'r-hl-y',  valId:'v-hl-y'  },
+    { elId:'pop-bignum',   sliderId:'r-num-y', valId:'v-num-y' },
+    { elId:'pop-subtitle', sliderId:'r-sub-y', valId:'v-sub-y' },
+    { elId:'pop-detail',   sliderId:'r-det-y', valId:'v-det-y' },
+  ];
+  items.forEach(({ elId, sliderId, valId }) => {
+    const el = $(elId);
+    if (!el) return;
+    el.classList.add('drag-el');
+
+    function startDrag(e) {
+      if (e.touches && e.touches.length > 1) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const clientY0 = e.touches ? e.touches[0].clientY : e.clientY;
+      const scale    = getCanvasScale();
+      const topStart = parseInt(el.style.top) || 0;
+      const slider   = $(sliderId);
+      const min = parseInt(slider.min), max = parseInt(slider.max);
+      el.classList.add('is-dragging');
+
+      function onMove(e) {
+        if (e.cancelable) e.preventDefault();
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        const newTop = Math.round(topStart + (cy - clientY0) / scale);
+        const clamped = Math.max(min, Math.min(max, newTop));
+        el.style.top = clamped + 'px';
+        slider.value = clamped;
+        $(valId).textContent = clamped;
+        if (elId === 'pop-detail') $('pop-line-bot').style.top = (clamped - 20) + 'px';
+      }
+
+      function onEnd() {
+        el.classList.remove('is-dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup',   onEnd);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend',  onEnd);
+        scheduleAutoSave();
+      }
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup',   onEnd);
+      document.addEventListener('touchmove', onMove, { passive:false });
+      document.addEventListener('touchend',  onEnd);
+    }
+
+    el.addEventListener('mousedown',  startDrag);
+    el.addEventListener('touchstart', startDrag, { passive:false });
+  });
+}
+
 // ===== CLOUD SYNC (JSONBlob.io — no account needed) =====
 const CLOUD_BLOB_KEY = 'pop-cloud-blob-id';
 const CLOUD_API = 'https://jsonblob.com/api/jsonBlob';
@@ -1258,6 +1329,7 @@ window.addEventListener('load', () => {
   renderTabs();
   scaleA3();
   if (window.innerWidth <= 768) showMobileTab('edit');
+  initDrag();
   updateCloudStatusBtn();
   // クラウド接続中なら起動時に最新データを取得
   const cloudId = getCloudBlobId();
