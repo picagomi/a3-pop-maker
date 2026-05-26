@@ -286,6 +286,46 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
   @keyframes slideInUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 }
 
+/* ========== CLOUD MODAL ========== */
+.cloud-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:stretch;justify-content:flex-end}
+.cloud-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);cursor:pointer}
+.cloud-panel{position:relative;z-index:1;background:#fff;width:380px;max-width:100vw;display:flex;flex-direction:column;box-shadow:-6px 0 32px rgba(0,0,0,.35);animation:slideInRight .22s ease}
+.cloud-head{background:#16213e;color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid #4a90e2}
+.cloud-head h2{font-size:15px;font-weight:bold;display:flex;align-items:center;gap:8px}
+.cloud-body{flex:1;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
+.cloud-not-connected{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:8px 0}
+.cloud-big-icon{font-size:56px;line-height:1;margin-bottom:4px}
+.cloud-desc{font-size:13px;color:#666;line-height:1.7;max-width:300px}
+.cloud-create-btn{width:100%;background:#4a90e2;color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;transition:background .2s}
+.cloud-create-btn:hover{background:#357abd}
+.cloud-or{font-size:12px;color:#bbb;display:flex;align-items:center;gap:8px;width:100%;margin:4px 0}
+.cloud-or::before,.cloud-or::after{content:'';flex:1;height:1px;background:#e8e8e8}
+.cloud-join-area{width:100%;display:flex;flex-direction:column;gap:8px}
+.cloud-label{font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:2px}
+.cloud-join-row{display:flex;gap:8px}
+.cloud-input{flex:1;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;outline:none;transition:border .15s}
+.cloud-input:focus{border-color:#4a90e2}
+.cloud-join-btn{background:#4a90e2;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit;white-space:nowrap}
+.cloud-join-btn:hover{background:#357abd}
+.cloud-connected-panel{display:flex;flex-direction:column;gap:16px}
+.cloud-status-badge{display:inline-flex;align-items:center;gap:6px;background:#e8f5e9;color:#2e7d32;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;align-self:flex-start}
+.cloud-section{background:#f8f8f8;border-radius:10px;padding:14px}
+.cloud-code-row{display:flex;align-items:center;gap:8px;margin:8px 0 6px}
+.cloud-code-text{flex:1;font-family:monospace;font-size:12px;color:#333;background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:8px 10px;word-break:break-all;letter-spacing:.03em}
+.cloud-copy-btn{background:#4a90e2;color:#fff;border:none;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap;font-family:inherit}
+.cloud-copy-btn:hover{background:#357abd}
+.cloud-hint{font-size:11px;color:#999;line-height:1.6}
+.cloud-sync-btn{width:100%;background:#4a90e2;color:#fff;border:none;padding:12px;border-radius:9px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
+.cloud-sync-btn:hover{background:#357abd}
+.cloud-disconnect-btn{width:100%;background:#f5f5f5;color:#999;border:1px solid #e0e0e0;padding:11px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.cloud-disconnect-btn:hover{background:#ffd6dc;color:#e94560;border-color:#f5b8c4}
+.cloud-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;box-shadow:0 0 0 2px rgba(76,175,80,.2)}
+.cloud-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;margin-right:3px;font-weight:700;background:#e3f2fd;color:#1565c0;vertical-align:middle}
+@media(max-width:768px){
+  .cloud-modal{align-items:flex-end;justify-content:stretch}
+  .cloud-panel{width:100%;border-radius:20px 20px 0 0;animation:slideInUp .22s ease;max-height:90vh;padding-bottom:env(safe-area-inset-bottom,0px)}
+}
+
 /* ========== PRINT ========== */
 #print-area{display:none}
 @media print{
@@ -310,6 +350,7 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
   </div>
   <div class="header-actions">
     <button class="btn btn-secondary" onclick="showNewPOP()">＋<span class="btn-label"> 新規作成</span></button>
+    <button class="btn btn-secondary" id="cloud-btn" onclick="showCloudSettings()" title="クラウド同期">☁️<span class="btn-label"> クラウド</span></button>
     <button class="btn btn-secondary" onclick="showHistory()">📋<span class="btn-label"> 履歴</span></button>
     <button class="btn btn-secondary" onclick="resetToDefault()">↺<span class="btn-label"> リセット</span></button>
     <button class="btn btn-secondary" onclick="duplicatePOP()">＋<span class="btn-label"> 複製</span></button>
@@ -478,6 +519,18 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
       </button>
     </div>
     <button class="newpop-cancel" onclick="hideNewPOP()">キャンセル</button>
+  </div>
+</div>
+
+<!-- ========== CLOUD MODAL ========== -->
+<div id="cloud-modal" class="cloud-modal" style="display:none">
+  <div class="cloud-overlay" onclick="hideCloudSettings()"></div>
+  <div class="cloud-panel">
+    <div class="cloud-head">
+      <h2>☁️ クラウド同期</h2>
+      <button class="hist-close-btn" onclick="hideCloudSettings()">✕</button>
+    </div>
+    <div id="cloud-body" class="cloud-body"></div>
   </div>
 </div>
 
@@ -742,6 +795,7 @@ function saveToHistory(type) {
     curIdx,
   });
   localStorage.setItem(HIST_KEY, JSON.stringify(history.slice(0, HIST_MAX)));
+  scheduleCloudSave();
 }
 
 function getHistory() {
@@ -752,6 +806,17 @@ function getHistory() {
 function showHistory() {
   renderHistList();
   $('history-modal').style.display = 'flex';
+  // クラウドと接続中なら最新データを自動取得してマージ
+  const cloudId = getCloudBlobId();
+  if (cloudId) {
+    _cloudFetch(cloudId).then(data => {
+      if (data && Array.isArray(data.history) && data.history.length) {
+        const merged = mergeHistories(getHistory(), data.history);
+        localStorage.setItem(HIST_KEY, JSON.stringify(merged));
+        renderHistList();
+      }
+    }).catch(() => {});
+  }
 }
 
 function hideHistory() {
@@ -779,7 +844,7 @@ function renderHistList() {
       <div class="hist-color-bar" style="background:${bg}"></div>
       <div class="hist-info">
         <div class="hist-hl">${hl}</div>
-        <div class="hist-meta">${badge}${dateStr}・${pages}ページ</div>
+        <div class="hist-meta">${badge}${getCloudBlobId() ? '<span class="cloud-badge">☁️ クラウド</span>' : ''}${dateStr}・${pages}ページ</div>
       </div>
       <div class="hist-actions">
         <button class="hist-load-btn" onclick="loadFromHistory('${entry.id}')">読込</button>
@@ -1000,6 +1065,192 @@ function printPOPs() {
   setTimeout(() => { pa.innerHTML = ''; }, 2000);
 }
 
+// ===== CLOUD SYNC (JSONBlob.io — no account needed) =====
+const CLOUD_BLOB_KEY = 'pop-cloud-blob-id';
+const CLOUD_API = 'https://jsonblob.com/api/jsonBlob';
+
+function getCloudBlobId() { return localStorage.getItem(CLOUD_BLOB_KEY) || ''; }
+function setCloudBlobId(id) { localStorage.setItem(CLOUD_BLOB_KEY, id); }
+
+async function _cloudCreate(data) {
+  const res = await fetch(CLOUD_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('create failed');
+  const loc = res.headers.get('Location') || '';
+  return loc.split('/').pop();
+}
+
+async function _cloudUpdate(id, data) {
+  const res = await fetch(`${CLOUD_API}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return res.ok;
+}
+
+async function _cloudFetch(id) {
+  const res = await fetch(`${CLOUD_API}/${id}`, {
+    headers: { 'Accept': 'application/json' }
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+function _cloudPayload() {
+  return { history: getHistory(), updatedAt: new Date().toISOString() };
+}
+
+function mergeHistories(a, b) {
+  const seen = new Set();
+  return [...(a||[]), ...(b||[])].filter(h => {
+    if (seen.has(h.id)) return false;
+    seen.add(h.id); return true;
+  }).sort((x, y) => new Date(y.timestamp) - new Date(x.timestamp)).slice(0, HIST_MAX);
+}
+
+let _cloudSaveTimer;
+function scheduleCloudSave() {
+  if (!getCloudBlobId()) return;
+  clearTimeout(_cloudSaveTimer);
+  _cloudSaveTimer = setTimeout(async () => {
+    const id = getCloudBlobId();
+    if (id) await _cloudUpdate(id, _cloudPayload());
+  }, 3000);
+}
+
+async function initCloudWorkspace(btn) {
+  btn.disabled = true; btn.textContent = '作成中...';
+  try {
+    const id = await _cloudCreate(_cloudPayload());
+    setCloudBlobId(id);
+    updateCloudStatusBtn();
+    renderCloudBody();
+  } catch(e) {
+    alert('ワークスペースの作成に失敗しました。インターネット接続を確認してください。');
+    btn.disabled = false; btn.textContent = '☁️ ワークスペースを新規作成';
+  }
+}
+
+async function joinWorkspace(btn) {
+  const id = ($('share-code-input').value || '').trim();
+  if (!id) { alert('共有コードを入力してください。'); return; }
+  btn.disabled = true; btn.textContent = '接続中...';
+  try {
+    const data = await _cloudFetch(id);
+    if (!data || !Array.isArray(data.history)) {
+      alert('共有コードが見つかりませんでした。コードを確認してください。');
+      btn.disabled = false; btn.textContent = '参加';
+      return;
+    }
+    if (confirm(`${data.history.length}件の履歴が見つかりました。このワークスペースに参加しますか？`)) {
+      const merged = mergeHistories(getHistory(), data.history);
+      localStorage.setItem(HIST_KEY, JSON.stringify(merged));
+      setCloudBlobId(id);
+      updateCloudStatusBtn();
+      renderCloudBody();
+    } else {
+      btn.disabled = false; btn.textContent = '参加';
+    }
+  } catch(e) {
+    alert('接続に失敗しました。インターネット接続を確認してください。');
+    btn.disabled = false; btn.textContent = '参加';
+  }
+}
+
+async function syncNow(btn) {
+  const id = getCloudBlobId();
+  if (!id) return;
+  const origText = btn.textContent;
+  btn.disabled = true; btn.textContent = '同期中...';
+  try {
+    // Pull from cloud first, merge, then push
+    const remote = await _cloudFetch(id);
+    if (remote && Array.isArray(remote.history)) {
+      const merged = mergeHistories(getHistory(), remote.history);
+      localStorage.setItem(HIST_KEY, JSON.stringify(merged));
+    }
+    const ok = await _cloudUpdate(id, _cloudPayload());
+    btn.textContent = ok ? '✅ 同期完了' : '❌ 同期失敗';
+  } catch(e) {
+    btn.textContent = '❌ 同期失敗';
+  }
+  btn.disabled = false;
+  setTimeout(() => { btn.textContent = origText; }, 2500);
+}
+
+function disconnectCloud() {
+  if (!confirm('クラウドとの接続を解除しますか？\n（ローカルのデータは保持されます）')) return;
+  localStorage.removeItem(CLOUD_BLOB_KEY);
+  updateCloudStatusBtn();
+  renderCloudBody();
+}
+
+function copyShareCode() {
+  const id = getCloudBlobId();
+  navigator.clipboard.writeText(id).then(() => {
+    const btn = document.querySelector('.cloud-copy-btn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  });
+}
+
+function updateCloudStatusBtn() {
+  const btn = $('cloud-btn');
+  if (!btn) return;
+  const connected = !!getCloudBlobId();
+  btn.innerHTML = connected
+    ? '☁️<span class="cloud-dot" style="margin-left:4px"></span><span class="btn-label"> クラウド</span>'
+    : '☁️<span class="btn-label"> クラウド</span>';
+}
+
+function renderCloudBody() {
+  const id = getCloudBlobId();
+  const body = $('cloud-body');
+  if (!id) {
+    body.innerHTML = `
+      <div class="cloud-not-connected">
+        <div class="cloud-big-icon">☁️</div>
+        <p class="cloud-desc">制作データをオンラインに保存して、複数のデバイスやメンバーとリアルタイムで共有できます。</p>
+        <button class="cloud-create-btn" onclick="initCloudWorkspace(this)">☁️ ワークスペースを新規作成</button>
+        <div class="cloud-or">または</div>
+        <div class="cloud-join-area">
+          <span class="cloud-label">共有コードで既存のワークスペースに参加</span>
+          <div class="cloud-join-row">
+            <input type="text" id="share-code-input" class="cloud-input" placeholder="共有コードを貼り付け">
+            <button class="cloud-join-btn" onclick="joinWorkspace(this)">参加</button>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    body.innerHTML = `
+      <div class="cloud-connected-panel">
+        <div class="cloud-status-badge"><span class="cloud-dot"></span>&nbsp;クラウド同期 ON</div>
+        <div class="cloud-section">
+          <span class="cloud-label">あなたの共有コード</span>
+          <div class="cloud-code-row">
+            <span class="cloud-code-text">${id}</span>
+            <button class="cloud-copy-btn" onclick="copyShareCode()">コピー</button>
+          </div>
+          <div class="cloud-hint">このコードを他のメンバーに共有すると、同じ履歴データを参照・利用できます</div>
+        </div>
+        <button class="cloud-sync-btn" onclick="syncNow(this)">🔄 今すぐ同期</button>
+        <button class="cloud-disconnect-btn" onclick="disconnectCloud()">接続を解除</button>
+      </div>`;
+  }
+}
+
+function showCloudSettings() {
+  renderCloudBody();
+  $('cloud-modal').style.display = 'flex';
+}
+function hideCloudSettings() { $('cloud-modal').style.display = 'none'; }
+
 window.addEventListener('resize', scaleA3);
 window.addEventListener('load', () => {
   setTpl('limited', document.querySelector('.tpl-btn.active'));
@@ -1007,6 +1258,17 @@ window.addEventListener('load', () => {
   renderTabs();
   scaleA3();
   if (window.innerWidth <= 768) showMobileTab('edit');
+  updateCloudStatusBtn();
+  // クラウド接続中なら起動時に最新データを取得
+  const cloudId = getCloudBlobId();
+  if (cloudId) {
+    _cloudFetch(cloudId).then(data => {
+      if (data && Array.isArray(data.history) && data.history.length) {
+        const merged = mergeHistories(getHistory(), data.history);
+        localStorage.setItem(HIST_KEY, JSON.stringify(merged));
+      }
+    }).catch(() => {});
+  }
 });
 </script>
 </body>
