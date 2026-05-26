@@ -341,11 +341,42 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
   @page{size:A3 portrait;margin:0}
   @page A3{size:A3 portrait;margin:0}
   @page A4{size:A4 portrait;margin:0}
+  /* ページ全体の背景を白に */
+  html,body{background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body *{visibility:hidden!important}
   #print-area,#print-area *{visibility:visible!important}
   #print-area{display:block!important;position:fixed!important;left:0!important;top:0!important}
-  .print-pop{overflow:hidden!important;position:relative!important;page-break-after:always!important;break-after:page!important;box-sizing:border-box!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  .print-pop *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  /* POP全体と背景要素: 色をそのまま印刷 */
+  .print-pop,
+  .print-pop #pop-bg,
+  .print-pop #pop-deco1,
+  .print-pop #pop-deco2,
+  .print-pop #pop-deco3,
+  .print-pop #pop-border,
+  .print-pop #pop-line-top,
+  .print-pop #pop-line-bot,
+  .print-pop #pop-topbar,
+  .print-pop #pop-topbar *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .print-pop{overflow:hidden!important;position:relative!important;page-break-after:always!important;break-after:page!important;box-sizing:border-box!important}
+  /* テキスト要素: 背景を透明（白紙）に強制 */
+  .print-pop #pop-headline,
+  .print-pop #pop-bignum,
+  .print-pop #pop-subtitle,
+  .print-pop #pop-detail,
+  .print-pop #pop-shopname,
+  .print-pop #pop-headline-text,
+  .print-pop #pop-bignum-text,
+  .print-pop #pop-suffix-text,
+  .print-pop #pop-subtitle-text,
+  .print-pop #pop-detail-text,
+  .print-pop #pop-shopname-text{background:transparent!important;background-color:transparent!important;background-image:none!important}
+  /* テキスト色はそのまま印刷 */
+  .print-pop #pop-headline-text,
+  .print-pop #pop-bignum-text,
+  .print-pop #pop-suffix-text,
+  .print-pop #pop-subtitle-text,
+  .print-pop #pop-detail-text,
+  .print-pop #pop-shopname-text{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   .print-pop-a3{width:297mm!important;height:420mm!important;page:A3}
   .print-pop-a4{width:210mm!important;height:297mm!important;page:A4}
 }
