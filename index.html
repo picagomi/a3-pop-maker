@@ -80,6 +80,75 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
 .rm-btn{background:#f0f0f0;color:#888;border:none;border-radius:4px;width:22px;height:22px;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0}
 .rm-btn:hover{background:#ffd6dc;color:#e94560}
 
+/* ========== MOBILE ========== */
+.mobile-bottom-nav{display:none}
+
+@media(max-width:768px){
+  body{height:auto;min-height:100vh;overflow:auto}
+
+  /* Header */
+  .header{padding:8px 12px;gap:8px;flex-wrap:wrap}
+  .header-title{font-size:14px;gap:6px}
+  .header-title svg{width:16px;height:16px}
+  .header-actions{gap:6px;flex-wrap:wrap}
+  .btn{padding:8px 12px;font-size:12px;gap:4px}
+
+  /* Main */
+  .main{flex-direction:column;overflow:visible;height:auto;padding-bottom:64px}
+
+  /* Panel */
+  .panel{width:100%;max-height:none;height:auto;border-right:none;border-bottom:1px solid #e0e0e0;overflow-y:auto}
+  .panel-section{padding:12px 14px}
+  .fg{margin-bottom:8px}
+  .fg label,.fh label,.cr label,.rr label{font-size:12px}
+  .fi{font-size:14px;padding:8px 10px}
+  input[type=range]{height:28px}
+  .cr input[type=color]{width:42px;height:34px}
+  .add-btn,.rm-btn{width:28px;height:28px;font-size:16px}
+
+  /* Template grid */
+  .tpl-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .tpl-btn{height:64px}
+  .tpl-btn .ti{font-size:18px}
+  .tpl-btn .tn{font-size:9px}
+
+  /* Canvas wrapper & area */
+  .canvas-wrapper{height:auto;overflow:visible}
+  .canvas-area{padding:12px;align-items:flex-start;justify-content:center;min-height:60vw;overflow:auto}
+
+  /* Tab bar */
+  .tab-bar{padding:6px 8px 0;gap:3px;overflow-x:auto}
+  .tab{padding:5px 10px;font-size:11px}
+  .btn-dup{padding:5px 8px;font-size:11px}
+
+  /* Mobile panel/canvas toggle */
+  .mobile-hidden{display:none!important}
+
+  /* Mobile bottom nav */
+  .mobile-bottom-nav{
+    display:flex;
+    position:fixed;
+    bottom:0;left:0;right:0;
+    height:60px;
+    background:#16213e;
+    border-top:2px solid #e94560;
+    z-index:200;
+    box-shadow:0 -4px 16px rgba(0,0,0,.4);
+  }
+  .mbnav-btn{
+    flex:1;background:none;border:none;
+    color:rgba(255,255,255,.45);
+    font-size:11px;font-weight:700;
+    cursor:pointer;font-family:inherit;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:3px;
+    transition:color .15s;
+    touch-action:manipulation;
+  }
+  .mbnav-btn.active{color:#e94560}
+  .mbnav-btn .mbn-icon{font-size:22px;line-height:1}
+}
+
 /* ========== PRINT ========== */
 #print-area{display:none}
 @media print{
@@ -245,6 +314,15 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
 
 </div>
 <div id="print-area"></div>
+
+<nav class="mobile-bottom-nav">
+  <button class="mbnav-btn active" id="mbn-edit" onclick="showMobileTab('edit')">
+    <span class="mbn-icon">✏️</span><span>編集</span>
+  </button>
+  <button class="mbnav-btn" id="mbn-preview" onclick="showMobileTab('preview')">
+    <span class="mbn-icon">👁️</span><span>プレビュー</span>
+  </button>
+</nav>
 
 <script>
 // ===== TEMPLATE DEFINITIONS =====
@@ -460,12 +538,30 @@ function resetToDefault() {
 // ===== SCALE TO FIT =====
 function scaleA3() {
   const area = document.getElementById('canvas-area');
-  const aw = area.clientWidth - 40;
-  const ah = area.clientHeight - 40;
+  const isMobile = window.innerWidth <= 768;
+  const pad = isMobile ? 16 : 40;
+  const aw = area.clientWidth - pad;
+  const ah = isMobile ? window.innerHeight * 0.7 : area.clientHeight - pad;
   const scale = Math.min(aw / 1122, ah / 1587, 1);
   document.getElementById('a3-scaler').style.transform = `scale(${scale})`;
-  document.getElementById('a3-wrapper').style.width = Math.round(1122 * scale) + 'px';
+  document.getElementById('a3-wrapper').style.width  = Math.round(1122 * scale) + 'px';
   document.getElementById('a3-wrapper').style.height = Math.round(1587 * scale) + 'px';
+}
+
+function showMobileTab(tab) {
+  const panel  = document.querySelector('.panel');
+  const canvas = document.querySelector('.canvas-wrapper');
+  if (tab === 'edit') {
+    panel.classList.remove('mobile-hidden');
+    canvas.classList.add('mobile-hidden');
+  } else {
+    panel.classList.add('mobile-hidden');
+    canvas.classList.remove('mobile-hidden');
+    setTimeout(scaleA3, 50);
+  }
+  document.getElementById('mbn-edit').classList.toggle('active', tab === 'edit');
+  document.getElementById('mbn-preview').classList.toggle('active', tab === 'preview');
+  window.scrollTo(0, 0);
 }
 
 function $(id) { return document.getElementById(id); }
@@ -576,6 +672,7 @@ window.addEventListener('load', () => {
   pops = [captureState()];
   renderTabs();
   scaleA3();
+  if (window.innerWidth <= 768) showMobileTab('edit');
 });
 </script>
 </body>
