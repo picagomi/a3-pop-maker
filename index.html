@@ -82,71 +82,148 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
 
 /* ========== MOBILE ========== */
 .mobile-bottom-nav{display:none}
+.mb-only{display:none}
 
 @media(max-width:768px){
-  body{height:auto;min-height:100vh;overflow:auto}
 
-  /* Header */
-  .header{padding:8px 12px;gap:8px;flex-wrap:wrap}
-  .header-title{font-size:14px;gap:6px}
-  .header-title svg{width:16px;height:16px}
-  .header-actions{gap:6px;flex-wrap:wrap}
-  .btn{padding:8px 12px;font-size:12px;gap:4px}
+  /* ---- Base ---- */
+  body{
+    height:auto;min-height:100svh;overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+  }
 
-  /* Main */
-  .main{flex-direction:column;overflow:visible;height:auto;padding-bottom:64px}
+  /* ---- Header ---- */
+  .header{
+    padding:10px 14px;
+    position:sticky;top:0;z-index:100;
+    gap:0;
+  }
+  .header-title{font-size:15px;gap:7px}
+  .header-title svg{width:17px;height:17px;flex-shrink:0}
+  .header-actions{gap:6px}
+  /* ヘッダーの副ボタンをアイコンのみ表示 */
+  .btn-secondary .btn-label{display:none}
+  .btn-secondary{padding:9px 13px;min-width:44px;justify-content:center}
+  .btn-primary{padding:9px 14px;font-size:13px}
 
-  /* Panel */
-  .panel{width:100%;max-height:none;height:auto;border-right:none;border-bottom:1px solid #e0e0e0;overflow-y:auto}
-  .panel-section{padding:12px 14px}
-  .fg{margin-bottom:8px}
-  .fg label,.fh label,.cr label,.rr label{font-size:12px}
-  .fi{font-size:14px;padding:8px 10px}
-  input[type=range]{height:28px}
-  .cr input[type=color]{width:42px;height:34px}
-  .add-btn,.rm-btn{width:28px;height:28px;font-size:16px}
-
-  /* Template grid */
-  .tpl-grid{grid-template-columns:repeat(3,1fr);gap:6px}
-  .tpl-btn{height:64px}
-  .tpl-btn .ti{font-size:18px}
-  .tpl-btn .tn{font-size:9px}
-
-  /* Canvas wrapper & area */
-  .canvas-wrapper{height:auto;overflow:visible}
-  .canvas-area{padding:12px;align-items:flex-start;justify-content:center;min-height:60vw;overflow:auto}
-
-  /* Tab bar */
-  .tab-bar{padding:6px 8px 0;gap:3px;overflow-x:auto}
-  .tab{padding:5px 10px;font-size:11px}
-  .btn-dup{padding:5px 8px;font-size:11px}
-
-  /* Mobile panel/canvas toggle */
+  /* ---- Main layout ---- */
+  .main{
+    flex-direction:column;overflow:visible;
+    height:auto;
+    padding-bottom:calc(64px + env(safe-area-inset-bottom,0px));
+  }
   .mobile-hidden{display:none!important}
+  .mb-only{display:flex}
 
-  /* Mobile bottom nav */
+  /* ---- Panel ---- */
+  .panel{
+    width:100%;border-right:none;
+    -webkit-overflow-scrolling:touch;
+    overflow-y:auto;
+  }
+  .panel-section{
+    padding:16px;
+    border-bottom:1px solid #ececec;
+  }
+  .panel-section h3{
+    font-size:10px;margin-bottom:12px;
+  }
+
+  /* Template grid — 2列 */
+  .tpl-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .tpl-btn{height:72px;border-radius:10px}
+  .tpl-btn .ti{font-size:22px}
+  .tpl-btn .tn{font-size:10px}
+
+  /* フォームコントロール（iOS zoom 防止：font-size 16px必須） */
+  .fi,
+  .fg input[type=text],
+  .fg textarea,
+  .font-sel{
+    font-size:16px!important;
+    padding:11px 12px;
+    border-radius:8px;
+    min-height:44px;
+  }
+  .fg{margin-bottom:12px}
+  .fh label,.fg label{font-size:13px;margin-bottom:5px}
+  .fh{margin-bottom:6px}
+
+  /* + / × ボタン */
+  .add-btn{width:32px;height:32px;font-size:18px;border-radius:6px}
+  .rm-btn{width:32px;height:32px;font-size:16px;border-radius:6px}
+  .fr{gap:6px;margin-bottom:6px}
+
+  /* カラーピッカー行 */
+  .cr{margin-bottom:12px;gap:12px}
+  .cr label{font-size:13px}
+  .cr input[type=color]{
+    width:48px;height:40px;
+    border-radius:8px;padding:3px;cursor:pointer;
+  }
+
+  /* スライダー行 */
+  .rr{margin-bottom:10px;gap:10px;align-items:center}
+  .rr label{font-size:12px;width:76px}
+  .rr input[type=range]{
+    height:32px;
+    -webkit-appearance:none;
+    border-radius:6px;
+    background:rgba(233,69,96,.15);
+  }
+  .rr input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:28px;height:28px;
+    background:#e94560;border-radius:50%;
+    box-shadow:0 2px 6px rgba(233,69,96,.4);
+  }
+  .rr span{font-size:12px;width:32px;font-weight:700;color:#e94560}
+
+  /* フォントセレクト */
+  .font-sel{margin-bottom:10px}
+
+  /* ---- Canvas ---- */
+  .canvas-wrapper{height:auto;overflow:visible}
+  .tab-bar{
+    padding:8px 10px 0;gap:4px;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+  }
+  .tab{padding:6px 12px;font-size:12px}
+  .canvas-area{
+    padding:14px 10px;
+    align-items:flex-start;
+    justify-content:center;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    min-height:50vw;
+    background:#2a2a3e;
+  }
+
+  /* ---- Bottom nav ---- */
   .mobile-bottom-nav{
     display:flex;
     position:fixed;
     bottom:0;left:0;right:0;
-    height:60px;
+    height:calc(56px + env(safe-area-inset-bottom,0px));
+    padding-bottom:env(safe-area-inset-bottom,0px);
     background:#16213e;
     border-top:2px solid #e94560;
     z-index:200;
-    box-shadow:0 -4px 16px rgba(0,0,0,.4);
+    box-shadow:0 -4px 20px rgba(0,0,0,.5);
   }
   .mbnav-btn{
     flex:1;background:none;border:none;
-    color:rgba(255,255,255,.45);
-    font-size:11px;font-weight:700;
+    color:rgba(255,255,255,.4);
+    font-size:12px;font-weight:700;
     cursor:pointer;font-family:inherit;
     display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:3px;
+    align-items:center;justify-content:center;gap:4px;
     transition:color .15s;
     touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
   }
   .mbnav-btn.active{color:#e94560}
-  .mbnav-btn .mbn-icon{font-size:22px;line-height:1}
+  .mbnav-btn .mbn-icon{font-size:24px;line-height:1}
 }
 
 /* ========== PRINT ========== */
@@ -168,9 +245,9 @@ body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic UI','Mei
     A3 <span class="accent">POP</span>メーカー
   </div>
   <div class="header-actions">
-    <button class="btn btn-secondary" onclick="resetToDefault()">↺ リセット</button>
-    <button class="btn btn-secondary" onclick="duplicatePOP()">＋ 複製</button>
-    <button class="btn btn-primary" onclick="printPOPs()">🖨️ 印刷（A3・全ページ）</button>
+    <button class="btn btn-secondary" onclick="resetToDefault()">↺<span class="btn-label"> リセット</span></button>
+    <button class="btn btn-secondary" onclick="duplicatePOP()">＋<span class="btn-label"> 複製</span></button>
+    <button class="btn btn-primary" onclick="printPOPs()">🖨️<span class="btn-label"> 印刷（A3）</span></button>
   </div>
 </div>
 
